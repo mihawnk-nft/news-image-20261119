@@ -14,6 +14,9 @@ const outputDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
 mkdirSync(outputDir, { recursive: true });
 copyFileSync(join(repoDir, "entry.png"), join(outputDir, "entry.png"));
 
-// The grader must see the real picture: refuse a silent empty copy.
+// The grader must see the real picture: refuse a silent empty copy,
+// and refuse a truncated one — the copy must match the source byte for byte.
+const source = statSync(join(repoDir, "entry.png"));
 const copied = statSync(join(outputDir, "entry.png"));
 if (copied.size === 0) throw new Error("entry.png copied empty");
+if (copied.size !== source.size) throw new Error(`entry.png copy truncated: ${copied.size} of ${source.size} bytes`);
