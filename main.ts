@@ -20,6 +20,12 @@ const picture = readFileSync(sourcePath);
 if (picture.length === 0) {
   throw new Error("entry.png is empty, refusing to hand the grader a blank page");
 }
+if (picture.length < 1024) {
+  throw new Error(`entry.png is only ${picture.length} bytes — too small to be the finished page`);
+}
+if (picture[0] !== 0xff || picture[1] !== 0xd8 || picture[2] !== 0xff) {
+  throw new Error("entry.png does not start with the JPEG magic bytes — the file is not a JPEG");
+}
 
 const digest = (buf) => createHash("sha256").update(buf).digest("hex");
 const expected = digest(picture);
